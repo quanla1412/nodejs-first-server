@@ -1,12 +1,12 @@
 var express = require('express');
 
-const Member = require('../models/member');
+const Members = require('../models/members');
 
 const memberRouter = express.Router()
 
 memberRouter.route('/')
 .get((req, res, next) => {
-    Member.find().then((members) => {
+    Members.find().then((members) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(members);
@@ -14,7 +14,7 @@ memberRouter.route('/')
     .catch((err)=> next(err));
 })
 .post((req, res, next) => {
-    Member.create(req.body).then((member) => {
+    Members.create(req.body).then((member) => {
         console.log('Member created!');
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
@@ -28,9 +28,42 @@ memberRouter.route('/')
     res.end('PUT operation not supported on /members');
 })
 .delete((req, res, next) => {
-    Member.deleteMany({}).then((resp) => {
+    Members.deleteMany({}).then((resp) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
+        res.json(resp);
+    }, (err) => next(err))
+    .catch((err) => next(err));
+});
+
+memberRouter.route('/:memberId')
+.get((req, res, next) => {
+    Members.findById(req.params.memberId)
+    .then((member) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(member);
+    }, (err)=> next(err))
+    .catch((err) => next(err));
+})
+.post((req, res, next) => {
+    res.statusCode = 403;
+    res.end('POST operation not supported on /members/' + req.params.memberId);
+})
+.put((req, res, next) => {
+    Members.findByIdAndUpdate(req.params.memberId, {$set: req.body}, {new: true})
+    .then((member) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type','application/json');
+        res.json(member);
+    }, (err) => next(err))
+    .catch((err) => next(err));
+})
+.delete((req, res, next) => {
+    Members.findByIdAndDelete(req.params.memberId)
+    .then((resp) => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type','application/json');
         res.json(resp);
     }, (err) => next(err))
     .catch((err) => next(err));

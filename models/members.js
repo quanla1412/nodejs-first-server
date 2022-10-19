@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const MemberSchema = new Schema({
+const MembersSchema = new Schema({
     mssv: {
         type: String,
         require: true,
@@ -15,6 +15,8 @@ const MemberSchema = new Schema({
         type: Boolean,
         default: true
     }
+},{
+    timestamps: true,
 });
 
-module.exports = mongoose.model('Member', MemberSchema);
+module.exports = mongoose.model('Members', MembersSchema);
