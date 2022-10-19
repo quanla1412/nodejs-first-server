@@ -3,11 +3,23 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const config = require('./config');
+const mongoose = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var membersRouter = require('./routes/membersRouter');
+const { url } = require('inspector');
+const { Console } = require('console');
 
 var app = express();
+
+const mongoUrl = config.mongoUrl;
+const connect = mongoose.connect(mongoUrl);
+
+connect.then((db) => {
+  console.log('Connected correctly to server... ');
+}, (err) => {console.log(err);})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +33,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.use('/members', membersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
